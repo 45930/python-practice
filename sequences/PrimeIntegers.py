@@ -2,26 +2,42 @@ from functools import lru_cache
 import math
 
 class PrimeIntegers:
-    seq = []
-
-    def __init__(self, upto=2**16):
-        self.upto = upto
-        self.generate_seq(upto)
-
+    def __init__(self, n = 1000):
+        self.n = n
     
     def __len__(self):
-        return len(self.seq)
+        return self.n
     
     def __getitem__(self, i: int) -> int:
-        return self.seq[i]
-    
-    def generate_seq(self, upto: int) -> int:
-        for i in range(upto):
-            if PrimeIntegers.is_prime(i):
-                self.seq.append(i)
+        if i < 0:
+            i = self.n + i
+        if i < 0 or i >= self.n:
+            raise IndexError
+        else:
+            return PrimeIntegers.ith_prime(i)
+
 
     @staticmethod
-    @lru_cache(2**8)
+    @lru_cache(2**16)
+    def ith_prime(i: int) -> int:
+        if i == 0:
+            return 2
+        if i == 1:
+            return 3
+
+        ## fill the cache
+        for j in range(i):
+            PrimeIntegers.ith_prime(j)
+        
+        ## Then search
+        j = PrimeIntegers.ith_prime(i - 1) + 2
+        while True:
+            if PrimeIntegers.is_prime(j):
+                return j
+            j += 1
+
+    @staticmethod
+    @lru_cache(2**16)
     def is_prime(i: int) -> bool:
         if i <= 1:
             return False
@@ -30,12 +46,13 @@ class PrimeIntegers:
         if i % 2 == 0 or i % 3 == 0:
             return False
         
-        for j in range(5, math.ceil(math.sqrt(i)), 6):
+        for j in range(5, math.ceil(math.sqrt(i)), 2):
             if i % j == 0 or i % (j + 2) == 0:
                 return False
         
         return True
 
-seq = PrimeIntegers(100000)
+seq = PrimeIntegers(10000)
+print(seq[0])
 print(seq[-1])
 print(len(seq))
