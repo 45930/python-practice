@@ -27,3 +27,6 @@ print(sorted(b, key=lambda pt: pt.tuple))
 
 b.sort()
 print(b)
+
+for p in b:
+    print(p)
